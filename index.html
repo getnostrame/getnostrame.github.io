@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Primary Meta Tags -->
+  <title>Nostrame - Secure NIP-07 Nostr Signer & Multi-Account Manager for Chrome</title>
+  <meta name="title" content="Nostrame - Secure NIP-07 Nostr Signer & Multi-Account Manager for Chrome">
+  <meta name="description" content="Your keys, your control. Stop pasting your nsec everywhere. Nostrame is a free, open-source browser extension for signing Nostr events securely. Manage multiple accounts from one seed phrase, control per-site permissions, and keep your keys safe with AES-256 encryption.">
+  <meta name="keywords" content="Nostr, NIP-07, browser extension, Nostr signer, Chrome extension, Brave extension, nsec, npub, private key manager, Nostr wallet, decentralized identity, NIP-06, NIP-44, NIP-49, NIP-65, mnemonic seed phrase, Nostr account manager, event signing, encrypted messages, relay management">
+  <meta name="author" content="Anderson Juhasc">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="English">
+  <meta name="revisit-after" content="7 days">
+  <meta name="theme-color" content="#8b5cf6">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://getnostrame.com/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://getnostrame.com/">
+  <meta property="og:title" content="Nostrame - Secure NIP-07 Nostr Signer & Multi-Account Manager">
+  <meta property="og:description" content="Your keys, your control. Stop pasting your nsec everywhere. Free, open-source browser extension for signing Nostr events securely. Manage multiple accounts, control permissions, AES-256 encryption.">
+  <meta property="og:image" content="https://getnostrame.com/assets/img/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Nostrame browser extension interface showing secure Nostr key management">
+  <meta property="og:site_name" content="Nostrame">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://getnostrame.com/">
+  <meta name="twitter:title" content="Nostrame - Secure NIP-07 Nostr Signer & Multi-Account Manager">
+  <meta name="twitter:description" content="Your keys, your control. Stop pasting your nsec everywhere. Free, open-source browser extension for signing Nostr events securely. Manage multiple accounts with AES-256 encryption.">
+  <meta name="twitter:image" content="https://getnostrame.com/assets/img/og-image.png">
+  <meta name="twitter:image:alt" content="Nostrame browser extension interface">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/16x16.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="assets/favicon/128x128.png">
+
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://github.com">
+  <link rel="preconnect" href="https://chromewebstore.google.com">
+  <link rel="dns-prefetch" href="https://github.com">
+  <link rel="dns-prefetch" href="https://chromewebstore.google.com">
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Nostrame",
+    "alternateName": "Nostrame Nostr Signer",
+    "description": "A secure, open-source browser extension for signing Nostr events without exposing your private keys. Manage multiple accounts from a single seed phrase with AES-256-GCM encryption.",
+    "applicationCategory": "BrowserApplication",
+    "applicationSubCategory": "Security",
+    "operatingSystem": "Chrome, Chromium, Brave, Edge, Opera, Vivaldi",
+    "permissions": "This extension requires permission to interact with Nostr web applications for event signing.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/InStock"
+    },
+    "softwareVersion": "1.0",
+    "datePublished": "2024-01-01",
+    "author": {
+      "@type": "Person",
+      "name": "Anderson Juhasc",
+      "url": "https://github.com/Anderson-Juhasc"
+    },
+    "publisher": {
+      "@type": "Person",
+      "name": "Anderson Juhasc"
+    },
+    "downloadUrl": "https://chromewebstore.google.com/detail/nostrame/phfdiknibomfgpefcicfckkklimoniej",
+    "installUrl": "https://chromewebstore.google.com/detail/nostrame/phfdiknibomfgpefcicfckkklimoniej",
+    "screenshot": "https://getnostrame.com/assets/img/og-image.png",
+    "image": "https://getnostrame.com/assets/img/og-image.png",
+    "url": "https://getnostrame.com/",
+    "sameAs": [
+      "https://github.com/getnostrame/nostrame",
+      "https://chromewebstore.google.com/detail/nostrame/phfdiknibomfgpefcicfckkklimoniej",
+      "https://nostrapps.com/Nostrame"
+    ],
+    "featureList": [
+      "NIP-07 browser signer",
+      "Multiple account management",
+      "BIP-39 mnemonic seed phrase support",
+      "AES-256-GCM encryption",
+      "NIP-04 encrypted direct messages",
+      "NIP-44 versioned encryption",
+      "NIP-49 ncryptsec import/export",
+      "NIP-65 relay management",
+      "Per-website permission control",
+      "Auto-lock protection",
+      "Encrypted vault backup"
+    ],
+    "softwareRequirements": "Chromium-based browser (Chrome, Brave, Edge, Opera, Vivaldi)",
+    "license": "https://unlicense.org/"
+  }
+  </script>
+
+  <!-- FAQ Schema for rich snippets -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What happens if I forget my Nostrame password?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "If you forget your password, you can recover your accounts using your mnemonic seed phrase. This is why it's crucial to securely back up your seed phrase when you first create your vault. Without either the password or seed phrase, your keys cannot be recovered."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Which browsers does Nostrame support?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Nostrame works with all Chromium-based browsers including Google Chrome, Brave, Microsoft Edge, Opera, and Vivaldi. Firefox support is planned for a future release."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is Nostrame compatible with popular Nostr web clients?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes! Nostrame implements the NIP-07 standard, making it compatible with any Nostr web client that supports browser signing. This includes popular clients like Snort, Coracle, Nostrudel, Iris, Primal, and many others."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does Nostrame send my data to any servers?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. Nostrame operates entirely locally on your device. There is no telemetry, no analytics, and no external server communication. The only network requests are to Nostr relays when fetching profile metadata, and this is done directly from your browser."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <header>
+    <div class="container">
+      <div class="logo">
+        <img src="assets/img/nostrame.svg" alt="Nostrame">
+        <span>Nostrame</span>
+      </div>
+      <nav>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#features">Features</a>
+        <a href="#security">Security</a>
+        <a href="#apps">Apps</a>
+        <a href="#nips">NIPs</a>
+        <a href="#faq">FAQ</a>
+        <a href="https://github.com/getnostrame/nostrame" target="_blank">GitHub</a>
+      </nav>
+      <div class="header-actions">
+        <button class="theme-toggle" aria-label="Toggle theme" title="Toggle theme: System / Light / Dark">
+          <img class="icon-system" src="assets/img/icons/icon-system.svg" alt="">
+          <img class="icon-sun" src="assets/img/icons/icon-sun.svg" alt="">
+          <img class="icon-moon" src="assets/img/icons/icon-moon.svg" alt="">
+        </button>
+        <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+          <img src="assets/img/icons/icon-menu.svg" width="24" height="24" alt="">
+        </button>
+      </div>
+    </div>
+    <nav class="mobile-nav" aria-label="Mobile navigation">
+      <a href="#how-it-works">How It Works</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#features">Features</a>
+      <a href="#security">Security</a>
+      <a href="#apps">Apps</a>
+      <a href="#nips">NIPs</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://github.com/getnostrame/nostrame" target="_blank">GitHub</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="container">
+        <h1>Your Keys, Your Control</h1>
+        <p>Stop pasting your nsec everywhere. Nostrame keeps your private keys safe with military-grade encryption while you seamlessly sign events across all your favorite Nostr web apps.</p>
+        <div class="hero-buttons">
+          <a href="https://chromewebstore.google.com/detail/nostrame/phfdiknibomfgpefcicfckkklimoniej" class="btn btn-primary" target="_blank">
+            <img src="assets/img/icons/icon-chrome-webstore.svg" width="20" height="20" alt="">
+            Install Extension
+          </a>
+          <a href="https://github.com/getnostrame/nostrame" class="btn btn-secondary" target="_blank">
+            <img src="assets/img/icons/icon-github.svg" width="20" height="20" alt="">
+            View Source
+          </a>
+        </div>
+        <div class="platform-badges">
+          <span class="platform-badge">
+            <img src="assets/img/icons/icon-chrome.svg" alt="Chrome">
+            Chrome
+          </span>
+          <span class="platform-badge">
+            <img src="assets/img/icons/icon-brave.svg" alt="Brave">
+            Brave
+          </span>
+          <span class="platform-badge">
+            <img src="assets/img/icons/icon-edge.svg" alt="Edge">
+            Edge
+          </span>
+          <span class="platform-badge">
+            <img src="assets/img/icons/icon-opera.svg" alt="Opera">
+            Opera
+          </span>
+          <span class="platform-badge">
+            <img src="assets/img/icons/icon-vivaldi.svg" alt="Vivaldi">
+            Vivaldi
+          </span>
+        </div>
+        <div class="hero-screenshot">
+          <img src="assets/img/profile-page.png" alt="Nostrame Extension Screenshot" loading="lazy">
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Nostrame - Key Benefits -->
+    <section class="why-nostrame">
+      <div class="container">
+        <div class="benefits-grid">
+          <div class="benefit-card animate-on-scroll">
+            <div class="benefit-icon">
+              <img src="assets/img/icons/icon-link.svg" alt="">
+            </div>
+            <h3>Connects to Apps</h3>
+            <p>No more pasting your nsec. Sign events directly from any NIP-07 compatible website.</p>
+          </div>
+          <div class="benefit-card animate-on-scroll">
+            <div class="benefit-icon">
+              <img src="assets/img/icons/icon-system.svg" alt="">
+            </div>
+            <h3>Cross Platform</h3>
+            <p>Works on Chrome, Brave, Edge, Opera, Vivaldi and all Chromium browsers.</p>
+          </div>
+          <div class="benefit-card animate-on-scroll">
+            <div class="benefit-icon">
+              <img src="assets/img/icons/icon-shield.svg" alt="">
+            </div>
+            <h3>Non-Custodial</h3>
+            <p>Your keys never leave your device. No servers, no third parties, no trust required.</p>
+          </div>
+          <div class="benefit-card animate-on-scroll">
+            <div class="benefit-icon">
+              <img src="assets/img/icons/icon-users.svg" alt="">
+            </div>
+            <h3>Multi-Account</h3>
+            <p>Manage unlimited identities from one seed phrase. Switch accounts instantly.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+      <div class="container">
+        <div class="section-title animate-on-scroll">
+          <h2>How It Works</h2>
+          <p>Get started with Nostrame in four simple steps</p>
+        </div>
+        <div class="steps-grid">
+          <div class="step animate-on-scroll">
+            <div class="step-number">
+              <img class="step-icon" src="assets/img/icons/icon-key.svg" alt="">
+            </div>
+            <h3>Create or Import</h3>
+            <p>Generate a new mnemonic seed phrase or import your existing keys</p>
+          </div>
+          <div class="step animate-on-scroll">
+            <div class="step-number">
+              <img class="step-icon" src="assets/img/icons/icon-globe.svg" alt="">
+            </div>
+            <h3>Visit Any Nostr Web App</h3>
+            <p>Browse to any website that supports NIP-07 signing</p>
+          </div>
+          <div class="step animate-on-scroll">
+            <div class="step-number">
+              <img class="step-icon" src="assets/img/icons/icon-check-circle.svg" alt="">
+            </div>
+            <h3>Approve Requests</h3>
+            <p>Review and approve signing requests with granular permissions</p>
+          </div>
+          <div class="step animate-on-scroll">
+            <div class="step-number">
+              <img class="step-icon" src="assets/img/icons/icon-lock.svg" alt="">
+            </div>
+            <h3>Keys Stay Safe</h3>
+            <p>Your private keys never leave the extension</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screenshot Gallery -->
+    <section class="screenshot-gallery" id="gallery">
+      <div class="container">
+        <div class="section-title animate-on-scroll">
+          <h2>See It In Action</h2>
+          <p>A closer look at how Nostrame protects your Nostr identity</p>
+        </div>
+        <div class="gallery-grid">
+          <div class="gallery-item animate-on-scroll">
+            <img src="assets/img/profile-page.png" alt="Profile Page" loading="lazy">
+            <h3>Profile Page</h3>
+            <p>View and manage your Nostr identity with all your account details</p>
+          </div>
+          <div class="gallery-item animate-on-scroll">
+            <img src="assets/img/generate-new-account.png" alt="Generate New Account" loading="lazy">
+            <h3>Generate New Account</h3>
+            <p>Create new accounts derived from your seed phrase instantly</p>
+          </div>
+          <div class="gallery-item animate-on-scroll">
+            <img src="assets/img/relay-management.png" alt="Relay Management" loading="lazy">
+            <h3>Relay Management</h3>
+            <p>Configure your read and write relays with NIP-65 support</p>
+          </div>
+          <div class="gallery-item animate-on-scroll">
+            <img src="assets/img/backup.png" alt="Backup" loading="lazy">
+            <h3>Secure Backup</h3>
+            <p>Export encrypted vault backups and recover with your seed phrase</p>
+          </div>
+          <div class="gallery-item animate-on-scroll">
+            <img src="assets/img/change-password.png" alt="Change Password" loading="lazy">
+            <h3>Change Password</h3>
+            <p>Update your vault password anytime to keep your keys secure</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+      <div class="container">
+        <div class="section-title animate-on-scroll">
+          <h2>Everything You Need</h2>
+          <p>Powerful features to manage your Nostr identity securely and efficiently</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card animate-on-scroll">
+            <div class="feature-icon">
+              <img src="assets/img/icons/icon-file-download.svg" alt="">
+            </div>
+            <h3>NIP-07 Signer</h3>
+            <p>Sign Nostr events directly from any compatible web application without exposing your private keys.</p>
+          </div>
+          <div class="feature-card animate-on-scroll">
+            <div class="feature-icon">
+              <img src="assets/img/icons/icon-users.svg" alt="">
+            </div>
+            <h3>Multiple Accounts</h3>
+            <p>Derive unlimited accounts from a single mnemonic seed phrase or import existing keys.</p>
+          </div>
+          <div class="feature-card animate-on-scroll">
+            <div class="feature-icon">
+              <img src="assets/img/icons/icon-lock.svg" alt="">
+            </div>
+            <h3>Private Key Encryption</h3>
+            <p>Import and export keys using NIP-49 ncryptsec format for secure, password-protected key storage.</p>
+          </div>
+          <div class="feature-card animate-on-scroll">
+            <div class="feature-icon">
+              <img src="assets/img/icons/icon-globe.svg" alt="">
+            </div>
+            <h3>Relay Management</h3>
+            <p>Configure your read and write relays with NIP-65 support and outbox model optimization.</p>
+          </div>
+          <div class="feature-card animate-on-scroll">
+            <div class="feature-icon">
+              <img src="assets/img/icons/icon-shield-check.svg" alt="">
+            </div>
+            <h3>Permission Control</h3>
+            <p>Granular per-website and per-event-kind permissions. You decide what each site can access.</p>
+          </div>
+          <div class="feature-card animate-on-scroll">
+            <div class="feature-icon">
+              <img src="assets/img/icons/icon-upload.svg" alt="">
+            </div>
+            <h3>Backup & Recovery</h3>
+            <p>Export encrypted vault backups and recover your accounts with your mnemonic seed phrase.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="security" id="security">
+      <div class="container">
+        <div class="section-title animate-on-scroll">
+          <h2>Security First</h2>
+          <p>Built with industry-standard cryptography and security best practices</p>
+        </div>
+        <div class="security-grid">
+          <div class="security-item animate-on-scroll">
+            <img class="security-check" src="assets/img/icons/icon-check-circle.svg" alt="">
+            <div>
+              <h4>AES-256-GCM Encryption</h4>
+              <p>Your vault is encrypted with authenticated encryption</p>
+            </div>
+          </div>
+          <div class="security-item animate-on-scroll">
+            <img class="security-check" src="assets/img/icons/icon-check-circle.svg" alt="">
+            <div>
+              <h4>PBKDF2 Key Derivation</h4>
+              <p>600,000 iterations following OWASP 2023 standards</p>
+            </div>
+          </div>
+          <div class="security-item animate-on-scroll">
+            <img class="security-check" src="assets/img/icons/icon-check-circle.svg" alt="">
+            <div>
+              <h4>Memory-Only Secrets</h4>
+              <p>Private keys exist only in service worker memory</p>
+            </div>
+          </div>
+          <div class="security-item animate-on-scroll">
+            <img class="security-check" src="assets/img/icons/icon-check-circle.svg" alt="">
+            <div>
+              <h4>Non-Extractable Keys</h4>
+              <p>CryptoKeys cannot be exported from the browser</p>
+            </div>
+          </div>
+          <div class="security-item animate-on-scroll">
+            <img class="security-check" src="assets/img/icons/icon-check-circle.svg" alt="">
+            <div>
+              <h4>Auto-Lock Protection</h4>
+              <p>Configurable timeout automatically locks your vault</p>
+            </div>
+          </div>
+          <div class="security-item animate-on-scroll">
+            <img class="security-check" src="assets/img/icons/icon-check-circle.svg" alt="">
+            <div>
+              <h4>No Data Collection</h4>
+              <p>Zero tracking, analytics, or external data transmission</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Compatible Apps -->
+    <section class="compatible-apps" id="apps">
+      <div class="container">
+        <div class="section-title animate-on-scroll">
+          <h2>Works With Your Favorite Clients</h2>
+          <p>Compatible with any Nostr web application that supports NIP-07</p>
+        </div>
+        <div class="apps-grid">
+          <a href="https://snort.social" target="_blank" class="app-badge">
+            <img src="https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://snort.social/&size=256" alt="Snort">
+            Snort
+          </a>
+          <a href="https://coracle.social" target="_blank" class="app-badge">
+            <img src="https://coracle-media.us-southeast-1.linodeobjects.com/logomark-light.png" alt="Coracle">
+            Coracle
+          </a>
+          <a href="https://nostrudel.ninja" target="_blank" class="app-badge">
+            <img src="https://cdn.satellite.earth/c8d939904dbe80b2a36badace31914984b9459794550b1a557c43936f779af13.png" alt="noStrudel">
+            noStrudel
+          </a>
+          <a href="https://iris.to" target="_blank" class="app-badge">
+            <img src="https://image.nostr.build/5457b339d6ed801fe1c50f2cd47c3d5e2a5d41524fbea31f9bd0ae70e3c067b3.png" alt="Iris">
+            Iris
+          </a>
+          <a href="https://primal.net" target="_blank" class="app-badge">
+            <img src="https://blossom.primal.net/0444bf8f340786d7021050a216f0401e51656d8ec3c32c04e94c8c46a1cdb5ce.png" alt="Primal">
+            Primal
+          </a>
+          <a href="https://habla.news" target="_blank" class="app-badge">
+            <img src="https://cdn.satellite.earth/270694a2f68d486a4f97dfafed7622839869a8759161dfe9946f64a1418a1885.svg" alt="Habla">
+            Habla
+          </a>
+          <a href="https://zap.stream" target="_blank" class="app-badge">
+            <img src="https://cdn.satellite.earth/71dcbdc1413713d148c18d92e3b66ceaef78919cba4bfbab6086d42f9cc12a96.svg" alt="Zap.stream">
+            Zap.stream
+          </a>
+          <a href="https://highlighter.com" target="_blank" class="app-badge">
+            <img src="https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://highlighter.com/&size=256" alt="Highlighter">
+            Highlighter
+          </a>
+          <a href="https://nosotros.app" target="_blank" class="app-badge">
+            <img src="https://blossom.nosotros.app/9e1d7871fdbdc626307541070ac6f98dfd0e30e4f4f521da0533e483caceef1b.png" alt="Nosotros">
+            Nosotros
+          </a>
+          <a href="https://jumble.social" target="_blank" class="app-badge">
+            <img src="https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://jumble.social/&size=256" alt="Jumble">
+            Jumble
+          </a>
+          <span class="app-badge" style="border-style: dashed; color: var(--text-muted);">
+            <img src="assets/img/icons/icon-plus-circle.svg" alt="">
+            And many more...
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Supported NIPs -->
+    <section class="nips" id="nips">
+      <div class="container">
+        <div class="section-title animate-on-scroll">
+          <h2>Supported NIPs</h2>
+          <p>Comprehensive support for Nostr Implementation Possibilities</p>
+        </div>
+        <div class="nips-table animate-on-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>NIP</th>
+                <th>Feature</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>NIP-01</td>
+                <td>Basic Protocol (Event Signing)</td>
+                <td><span class="status-supported"><img src="assets/img/icons/icon-check.svg" alt=""> Supported</span></td>
+              </tr>
+              <tr>
+                <td>NIP-04</td>
+                <td>Encrypted Direct Messages</td>
+                <td><span class="status-supported"><img src="assets/img/icons/icon-check.svg" alt=""> Supported</span></td>
+              </tr>
+              <tr>
+                <td>NIP-06</td>
+                <td>Key Derivation from Mnemonic</td>
+                <td><span class="status-supported"><img src="assets/img/icons/icon-check.svg" alt=""> Supported</span></td>
+              </tr>
+              <tr>
+                <td>NIP-07</td>
+                <td>Browser Signer Extension</td>
+                <td><span class="status-supported"><img src="assets/img/icons/icon-check.svg" alt=""> Supported</span></td>
+              </tr>
+              <tr>
+                <td>NIP-19</td>
+                <td>bech32-encoded Entities</td>
+                <td><span class="status-supported"><img src="assets/img/icons/icon-check.svg" alt=""> Supported</span></td>
+              </tr>
+              <tr>
+                <td>NIP-44</td>
+                <td>Versioned Encryption</td>
+                <td><span class="status-supported"><img src="assets/img/icons/icon-check.svg" alt=""> Supported</span></td>
+              </tr>
+              <tr>
+                <td>NIP-49</td>
+                <td>Private Key Encryption (ncryptsec)</td>
+                <td><span class="status-supported"><img src="assets/img/icons/icon-check.svg" alt=""> Supported</span></td>
+              </tr>
+              <tr>
+                <td>NIP-65</td>
+                <td>Relay List Metadata</td>
+                <td><span class="status-supported"><img src="assets/img/icons/icon-check.svg" alt=""> Supported</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq" id="faq">
+      <div class="container">
+        <div class="section-title animate-on-scroll">
+          <h2>Frequently Asked Questions</h2>
+          <p>Common questions about Nostrame</p>
+        </div>
+        <div class="faq-grid">
+          <div class="faq-item animate-on-scroll">
+            <button class="faq-question" aria-expanded="false">
+              What happens if I forget my password?
+              <img src="assets/img/icons/icon-chevron-down.svg" alt="">
+            </button>
+            <div class="faq-answer">
+              <p>If you forget your password, you can recover your accounts using your mnemonic seed phrase. This is why it's crucial to securely back up your seed phrase when you first create your vault. Without either the password or seed phrase, your keys cannot be recovered.</p>
+            </div>
+          </div>
+          <div class="faq-item animate-on-scroll">
+            <button class="faq-question" aria-expanded="false">
+              Which browsers are supported?
+              <img src="assets/img/icons/icon-chevron-down.svg" alt="">
+            </button>
+            <div class="faq-answer">
+              <p>Nostrame works with all Chromium-based browsers including Google Chrome, Brave, Microsoft Edge, Opera, and Vivaldi. Firefox support is planned for a future release.</p>
+            </div>
+          </div>
+          <div class="faq-item animate-on-scroll">
+            <button class="faq-question" aria-expanded="false">
+              Is Nostrame compatible with popular Nostr web clients?
+              <img src="assets/img/icons/icon-chevron-down.svg" alt="">
+            </button>
+            <div class="faq-answer">
+              <p>Yes! Nostrame implements the NIP-07 standard, making it compatible with any Nostr web client that supports browser signing. This includes popular clients like Snort, Coracle, Nostrudel, Iris, and many others.</p>
+            </div>
+          </div>
+          <div class="faq-item animate-on-scroll">
+            <button class="faq-question" aria-expanded="false">
+              How is Nostrame different from other signers?
+              <img src="assets/img/icons/icon-chevron-down.svg" alt="">
+            </button>
+            <div class="faq-answer">
+              <p>Nostrame focuses on security and multi-account management. Unlike simpler signers, it supports hierarchical deterministic key derivation (NIP-06), meaning you can generate unlimited accounts from a single seed phrase. It also offers granular permission controls per website and per event kind.</p>
+            </div>
+          </div>
+          <div class="faq-item animate-on-scroll">
+            <button class="faq-question" aria-expanded="false">
+              Is my data sent to any servers?
+              <img src="assets/img/icons/icon-chevron-down.svg" alt="">
+            </button>
+            <div class="faq-answer">
+              <p>No. Nostrame operates entirely locally on your device. There is no telemetry, no analytics, and no external server communication. The only network requests are to Nostr relays when fetching profile metadata, and this is done directly from your browser.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta">
+      <div class="container">
+        <div class="cta-box animate-on-scroll">
+          <h2>Ready to Take Control?</h2>
+          <p>Install Nostrame and start using Nostr web apps securely today.</p>
+          <a href="https://chromewebstore.google.com/detail/nostrame/phfdiknibomfgpefcicfckkklimoniej" class="btn btn-primary" target="_blank">
+            <img src="assets/img/icons/icon-chrome-webstore.svg" width="20" height="20" alt="">
+            Install from Chrome Web Store
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-actions">
+        <a href="https://formastr.com/npub1lm93678pyyxxdta28lyjaq4pyfps6cqpk9y04w3seu4wfeh6alesnzwwz2" target="_blank" class="nostr-follow-btn">
+          <img src="assets/img/icons/icon-nostr.svg" width="20" height="20" alt="">
+          Follow on Nostr
+          <span class="follower-count" id="follower-count"></span>
+        </a>
+        <a href="lightning:anjhc@coinos.io" class="zap-btn">
+          <img src="assets/img/icons/icon-lightning.svg" alt="">
+          Support the Devs
+        </a>
+      </div>
+      <div class="stats-badges">
+        <a href="https://chromewebstore.google.com/detail/nostrame/phfdiknibomfgpefcicfckkklimoniej" target="_blank">
+          <img src="https://img.shields.io/chrome-web-store/users/phfdiknibomfgpefcicfckkklimoniej?style=flat&logo=chromewebstore&logoColor=white&label=Users&color=8b5cf6" alt="Chrome Web Store Users">
+        </a>
+        <a href="https://github.com/getnostrame/nostrame" target="_blank">
+          <img src="https://img.shields.io/github/stars/getnostrame/nostrame?style=flat&logo=github&logoColor=white&label=Stars&color=8b5cf6" alt="GitHub Stars">
+        </a>
+      </div>
+      <div class="footer-links">
+        <a href="https://chromewebstore.google.com/detail/nostrame/phfdiknibomfgpefcicfckkklimoniej" target="_blank" class="footer-link-icon">
+          <img src="assets/img/icons/icon-chrome-webstore.svg" width="16" height="16" alt="">
+          Chrome Web Store
+        </a>
+        <a href="https://github.com/getnostrame/nostrame" target="_blank" class="footer-link-icon">
+          <img src="assets/img/icons/icon-github.svg" width="16" height="16" alt="">
+          GitHub
+        </a>
+        <a href="https://nostrapps.com/Nostrame" target="_blank" class="footer-link-icon">
+          <img src="assets/img/icons/nostrapps.svg" width="16" height="16" alt="">
+          NostrApps
+        </a>
+        <a href="https://github.com/getnostrame/nostrame/issues" target="_blank">Report Issues</a>
+        <a href="https://github.com/getnostrame/nostrame/blob/main/privacy.txt" target="_blank">Privacy Policy</a>
+        <a href="https://github.com/getnostrame/nostrame/blob/main/LICENSE" target="_blank">License</a>
+      </div>
+      <p class="footer-copyright">
+        Built by <a href="https://formastr.com/npub1f27g79lrpey73wtqa2pprn7vv3yveyytws08lxqe7pn0yuj8ppyqyk9swu" target="_blank">Anjhc</a><br>
+        Nostrame is open source software released under the Unlicense.
+      </p>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
