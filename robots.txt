@@ -1,0 +1,6 @@
+# robots.txt for getnostrame.com
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://getnostrame.com/sitemap.xml
