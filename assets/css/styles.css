@@ -43,6 +43,13 @@
   background: var(--bg-card);
 }
 
+.theme-light .btn-secondary img,
+.theme-light .footer-link-icon img[src*="icon-github"],
+.theme-light .footer-link-icon img[src*="icon-chrome-webstore"] {
+  filter: brightness(0) saturate(100%);
+  opacity: 0.5;
+}
+
 * {
   margin: 0;
   padding: 0;
