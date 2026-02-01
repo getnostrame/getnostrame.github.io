@@ -266,10 +266,19 @@ nav a:hover {
   font-size: 3rem;
   font-weight: 800;
   margin-bottom: 24px;
+  color: var(--text);
   background: linear-gradient(135deg, var(--text) 0%, var(--primary-light) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Dark Reader fallback - disable gradient text to prevent color inversion */
+[data-darkreader-scheme] .hero h1 {
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: unset;
+  background-clip: unset;
 }
 
 .hero p {
