@@ -1,6 +1,55 @@
-# robots.txt for getnostrame.com
+# Robots.txt for getnostrame.com
+# Nostrame - Secure NIP-07 Nostr Signer & Multi-Account Manager
+
 User-agent: *
 Allow: /
 
-# Sitemap
+# Sitemap location
 Sitemap: https://getnostrame.com/sitemap.xml
+
+# LLM Context Files (see https://llmstxt.org)
+# llms.txt - Concise overview for AI assistants
+# llms-full.txt - Comprehensive documentation for detailed queries
+
+# Disallow admin/private areas (none exist, but good practice)
+Disallow: /admin/
+Disallow: /private/
+Disallow: /.git/
+
+# Allow all major search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Yandex
+Allow: /
+
+# AI Assistants (allowed - we provide llms.txt for context)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Anthropic-AI
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+# Block AI training crawlers (optional - uncomment if desired)
+# User-agent: CCBot
+# Disallow: /
+# User-agent: Google-Extended
+# Disallow: /

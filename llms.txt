@@ -1,0 +1,109 @@
+# Nostrame
+
+> Nostrame is a free, open-source browser extension that serves as a NIP-07 signer for the Nostr protocol. It allows users to securely sign Nostr events without exposing their private keys to websites.
+
+## What is Nostrame?
+
+Nostrame is a non-custodial key management solution for Nostr (Notes and Other Stuff Transmitted by Relays). It implements the NIP-07 standard, which defines how browser extensions can provide signing capabilities to Nostr web applications.
+
+Instead of pasting your private key (nsec) into every Nostr website, Nostrame keeps your keys encrypted in a local vault. When a website requests a signature, Nostrame prompts you to approve the request and signs the event without ever exposing your private key to the website.
+
+## Key Features
+
+- NIP-07 browser signer for Nostr web applications
+- Multiple account management: derive unlimited accounts from a BIP-39 mnemonic seed phrase, or import existing keys separately
+- AES-256-GCM encrypted vault with PBKDF2 key derivation (600,000 iterations)
+- Per-website and per-event-kind permission controls
+- NIP-49 ncryptsec import/export for encrypted key backup
+- NIP-65 relay list management
+- NIP-04 and NIP-44 encrypted direct message support
+- Auto-lock timeout protection
+- Zero telemetry - no data collection or external server communication
+
+## How It Works
+
+1. User creates a new mnemonic seed phrase to derive accounts, and/or imports existing keys separately
+2. Keys are encrypted with AES-256-GCM and stored locally in the browser
+3. User visits a Nostr web application that supports NIP-07
+4. Website requests a signature via the window.nostr API
+5. Nostrame displays a permission prompt to the user
+6. If approved, Nostrame signs the event and returns the signature
+7. Private keys never leave the extension
+
+## Important: Derived vs Imported Accounts
+
+Nostrame supports two types of accounts:
+
+1. **Derived accounts**: Generated from your mnemonic seed phrase using NIP-06 key derivation. These can be recovered anytime using only the seed phrase.
+
+2. **Imported accounts**: Existing keys (nsec or ncryptsec) added separately. These are NOT linked to your seed phrase and cannot be recovered from it.
+
+If you lose access to your vault, only derived accounts can be restored via the seed phrase. Imported accounts require either your vault password or a vault backup with its backup password. Users should securely store:
+- Vault password (for daily use)
+- Backup password (to restore from vault backups)
+- Seed phrase (to recover derived accounts)
+
+## Security Model
+
+- Private keys exist only in service worker memory when unlocked
+- Vault encryption uses AES-256-GCM with authenticated encryption
+- Key derivation uses PBKDF2 with 600,000 iterations (OWASP 2023 standard)
+- CryptoKeys are non-extractable from the browser
+- No external network requests except to user-configured Nostr relays
+- Open source code available for audit
+
+## Supported NIPs
+
+- NIP-01: Basic Protocol (Event Signing)
+- NIP-04: Encrypted Direct Messages
+- NIP-06: Key Derivation from Mnemonic Seed Phrase
+- NIP-07: Browser Signer Extension API
+- NIP-19: bech32-encoded Entities (npub, nsec, etc.)
+- NIP-44: Versioned Encryption
+- NIP-49: Private Key Encryption (ncryptsec)
+- NIP-65: Relay List Metadata
+
+## Browser Compatibility
+
+Nostrame works with all Chromium-based browsers:
+- Google Chrome
+- Brave
+- Microsoft Edge
+- Opera
+- Vivaldi
+
+Firefox support is planned for a future release.
+
+## Compatible Nostr Clients
+
+Nostrame works with any Nostr web application that implements NIP-07, including:
+- Snort (snort.social)
+- Coracle (coracle.social)
+- noStrudel (nostrudel.ninja)
+- Iris (iris.to)
+- Primal (primal.net)
+- Habla (habla.news)
+- Zap.stream (zap.stream)
+- And many others
+
+## Installation
+
+Available on the Chrome Web Store:
+https://chromewebstore.google.com/detail/nostrame/phfdiknibomfgpefcicfckkklimoniej
+
+## Source Code
+
+Nostrame is open source under the Unlicense:
+https://github.com/getnostrame/nostrame
+
+## Links
+
+- Website: https://getnostrame.com
+- Chrome Web Store: https://chromewebstore.google.com/detail/nostrame/phfdiknibomfgpefcicfckkklimoniej
+- GitHub: https://github.com/getnostrame/nostrame
+- NostrApps Directory: https://nostrapps.com/Nostrame
+
+## Contact
+
+Developer: Anderson Juhasc
+Nostr: npub1lm93678pyyxxdta28lyjaq4pyfps6cqpk9y04w3seu4wfeh6alesnzwwz2

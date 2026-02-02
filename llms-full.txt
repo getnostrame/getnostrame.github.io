@@ -1,0 +1,360 @@
+# Nostrame - Complete Documentation for LLMs
+
+> Nostrame is a free, open-source browser extension that serves as a NIP-07 signer for the Nostr protocol. It allows users to securely sign Nostr events without exposing their private keys to websites.
+
+## Table of Contents
+
+1. Overview
+2. Problem Statement
+3. How Nostrame Solves It
+4. Technical Architecture
+5. Feature Details
+6. Security Model
+7. Supported NIPs (Detailed)
+8. Installation Guide
+9. Use Cases
+10. Comparison with Alternatives
+11. FAQ
+12. Links and Resources
+
+---
+
+## 1. Overview
+
+Nostrame is a non-custodial key management browser extension for Nostr (Notes and Other Stuff Transmitted by Relays). Nostr is a decentralized social protocol where users control their identity through cryptographic key pairs.
+
+Nostrame implements NIP-07, the standard that defines how browser extensions provide signing capabilities to Nostr web applications. This allows users to interact with any Nostr website without exposing their private keys.
+
+**Key Facts:**
+- License: Unlicense (public domain)
+- Price: Free
+- Platform: Chromium-based browsers (Chrome, Brave, Edge, Opera, Vivaldi)
+- Developer: Anderson Juhasc
+- First Release: 2024
+
+---
+
+## 2. Problem Statement
+
+In Nostr, your identity is your private key. Losing it means losing your identity. Exposing it means someone can impersonate you permanently.
+
+Many Nostr web clients ask users to paste their private key (nsec) directly into the website. This creates serious security risks:
+
+- The website has full access to your private key
+- Malicious or compromised websites can steal your key
+- Keys may be logged, cached, or transmitted insecurely
+- You have no control over what the website signs on your behalf
+- No ability to revoke access once key is shared
+
+---
+
+## 3. How Nostrame Solves It
+
+Nostrame acts as a secure intermediary between Nostr websites and your private keys:
+
+1. **Key Isolation**: Private keys are stored in an encrypted vault within the browser extension, never exposed to websites
+2. **Permission Control**: Users explicitly approve each signing request
+3. **Granular Permissions**: Control which websites can request signatures and for which event types
+4. **Multi-Account**: Derive multiple identities from a seed phrase, or import existing keys separately
+5. **Encryption**: Vault is encrypted with AES-256-GCM using a user-chosen password
+
+**Workflow:**
+```
+User visits Nostr website
+    ↓
+Website calls window.nostr.signEvent(event)
+    ↓
+Nostrame intercepts the request
+    ↓
+Nostrame shows approval popup to user
+    ↓
+User reviews and approves (or denies)
+    ↓
+Nostrame signs the event internally
+    ↓
+Only the signature is returned to the website
+    ↓
+Private key never leaves the extension
+```
+
+---
+
+## 4. Technical Architecture
+
+### Storage
+- Encrypted vault stored in browser's local extension storage
+- Vault contains: encrypted seed phrase, derived accounts, imported accounts, relay configurations, permissions
+
+### Encryption
+- Algorithm: AES-256-GCM (authenticated encryption)
+- Key Derivation: PBKDF2 with SHA-256
+- Iterations: 600,000 (OWASP 2023 recommendation)
+- Salt: Cryptographically random, unique per vault
+
+### Key Management
+- BIP-39: Mnemonic seed phrase generation and import
+- BIP-32: Hierarchical deterministic key derivation
+- NIP-06: Nostr-specific derivation path (m/44'/1237'/account'/0/0)
+
+### Runtime Security
+- Private keys loaded into service worker memory only when vault is unlocked
+- CryptoKey objects are non-extractable
+- Auto-lock after configurable timeout
+- Memory cleared on lock
+
+---
+
+## 5. Feature Details
+
+### NIP-07 Browser Signer
+Implements the window.nostr API:
+- getPublicKey(): Returns the user's public key (npub)
+- signEvent(event): Signs a Nostr event and returns the signature
+- getRelays(): Returns the user's configured relay list
+- nip04.encrypt/decrypt(): NIP-04 encrypted direct messages
+- nip44.encrypt/decrypt(): NIP-44 versioned encryption
+
+### Multiple Account Management
+Nostrame supports two distinct types of accounts:
+
+**Derived Accounts:**
+- Generated from your mnemonic seed phrase using NIP-06 key derivation
+- Unlimited accounts can be derived from one seed phrase
+- Each derived account follows the path m/44'/1237'/account'/0/0
+- Can be recovered anytime using only the seed phrase
+
+**Imported Accounts:**
+- Existing keys added via nsec or ncryptsec format
+- Completely independent from your seed phrase
+- Cannot be recovered from the seed phrase
+- Require vault backup or original key material for recovery
+
+Switch between any account type instantly within the extension.
+
+### Permission System
+- Per-website permissions
+- Per-event-kind permissions (e.g., allow posting notes, block DM decryption)
+- Remember permissions for trusted sites
+- Revoke permissions at any time
+
+### Relay Management
+- Configure read and write relays per account
+- NIP-65 relay list metadata support
+- Relays used for fetching profile metadata
+
+### Backup and Recovery
+
+**Vault Backup:**
+- Export encrypted vault backup containing all accounts (derived and imported)
+- Backups are encrypted with a separate backup password chosen during export
+- Restore full vault from backup file using the backup password
+- IMPORTANT: Without the backup password, the backup file cannot be opened
+- Recommended for preserving imported accounts
+
+**Seed Phrase Recovery:**
+- Recover derived accounts using only your mnemonic seed phrase
+- Works even without vault backup
+- IMPORTANT: Imported accounts cannot be recovered from seed phrase
+
+**Key Export:**
+- Export individual keys in NIP-49 ncryptsec format
+- Password-protected encrypted key format
+- Useful for backing up imported accounts separately
+
+**Best Practice:** Securely store these three items:
+1. Vault password (for daily use)
+2. Backup password (to restore from vault backups)
+3. Seed phrase (to recover derived accounts only)
+
+If you use imported accounts, losing both your vault password and backup password means permanent loss of those accounts.
+
+---
+
+## 6. Security Model
+
+### What Nostrame Protects Against
+- Websites stealing your private key
+- Unauthorized signing of events
+- Key exposure through browser storage inspection
+- Brute force attacks on encrypted vault
+
+### What Nostrame Cannot Protect Against
+- Malware with full system access
+- Physical access to unlocked device
+- User approving malicious signing requests
+- Compromised browser or extension updates
+
+### Security Best Practices
+1. Use a strong, unique password for the vault
+2. Back up your seed phrase securely offline
+3. Review signing requests before approving
+4. Lock the extension when not in use
+5. Only install from official Chrome Web Store
+
+### No Data Collection
+- Zero telemetry or analytics
+- No external server communication
+- No crash reporting
+- Only network requests are to user-configured Nostr relays
+
+---
+
+## 7. Supported NIPs (Detailed)
+
+### NIP-01: Basic Protocol
+Core event signing functionality. Nostrame signs events with the user's private key using secp256k1 Schnorr signatures.
+
+### NIP-04: Encrypted Direct Messages
+Legacy encrypted DM format using shared secret derivation. Supported for compatibility with older clients.
+
+### NIP-06: Key Derivation from Mnemonic
+Derives Nostr keys from BIP-39 mnemonic seed phrases using the derivation path m/44'/1237'/account'/0/0.
+
+### NIP-07: Browser Signer Extension
+The core standard Nostrame implements. Defines the window.nostr API for browser-based signing.
+
+### NIP-19: bech32-encoded Entities
+Supports encoding and decoding of:
+- npub (public keys)
+- nsec (private keys)
+- note (event IDs)
+- nprofile, nevent, naddr (with relay hints)
+
+### NIP-44: Versioned Encryption
+Modern encryption standard with versioning for forward compatibility. Uses XChaCha20-Poly1305.
+
+### NIP-49: Private Key Encryption
+Encrypted private key format (ncryptsec) for secure backup and transfer. Uses scrypt + XChaCha20-Poly1305.
+
+### NIP-65: Relay List Metadata
+Manages user relay preferences (read/write) for the outbox model of relay discovery.
+
+---
+
+## 8. Installation Guide
+
+### From Chrome Web Store (Recommended)
+1. Visit https://chromewebstore.google.com/detail/nostrame/phfdiknibomfgpefcicfckkklimoniej
+2. Click "Add to Chrome"
+3. Confirm the installation
+4. Click the Nostrame icon in your browser toolbar
+5. Create a new vault with a password
+6. Generate a new seed phrase or import existing keys
+7. Securely back up your seed phrase
+
+### From Source (Advanced)
+1. Clone https://github.com/getnostrame/nostrame
+2. Run `npm install && npm run build`
+3. Load unpacked extension in chrome://extensions
+
+---
+
+## 9. Use Cases
+
+### Personal Use
+- Single Nostr identity across multiple web clients
+- Secure key storage without hardware wallet
+- Easy switching between personal and professional accounts
+
+### Privacy-Focused Users
+- Separate identities for different contexts
+- No data leaves the device
+- Open source for auditability
+
+### Developers
+- Test NIP-07 integration in web applications
+- Multiple test accounts from one seed
+- Inspect signing requests
+
+### Organizations
+- Team members with individual accounts
+- Consistent security policy
+- No shared credentials
+
+---
+
+## 10. Comparison with Alternatives
+
+### vs. Pasting nsec
+| Aspect | Pasting nsec | Nostrame |
+|--------|--------------|----------|
+| Security | Key exposed to website | Key never exposed |
+| Convenience | Must paste repeatedly | One-click signing |
+| Multi-account | Manual switching | Instant switching |
+| Permissions | None | Granular control |
+
+### vs. nos2x
+| Aspect | nos2x | Nostrame |
+|--------|-------|----------|
+| Multi-account | Limited | Unlimited via HD derivation |
+| Encryption | Basic | AES-256-GCM |
+| Key derivation | N/A | NIP-06 support |
+| NIP-44 | No | Yes |
+
+### vs. Alby
+| Aspect | Alby | Nostrame |
+|--------|------|----------|
+| Focus | Lightning + Nostr | Nostr only |
+| Complexity | Higher | Simpler |
+| Account creation | Web account | Local only |
+
+### vs. Hardware Wallets
+| Aspect | Hardware Wallet | Nostrame |
+|--------|-----------------|----------|
+| Security | Highest | High |
+| Cost | $50-150+ | Free |
+| Convenience | Requires device | Browser-native |
+| Setup | Complex | Simple |
+
+---
+
+## 11. FAQ
+
+### What happens if I forget my password?
+You can recover your **derived accounts** using your mnemonic seed phrase. However, **imported accounts cannot be recovered from the seed phrase** - they require your vault password or a vault backup with its backup password. This is why it's important to:
+1. Securely store your vault password
+2. Securely store your backup password (required to open vault backups)
+3. Maintain encrypted vault backups
+4. Optionally export imported keys in ncryptsec format as separate backups
+
+### Which browsers are supported?
+All Chromium-based browsers: Chrome, Brave, Edge, Opera, Vivaldi. Firefox support is planned.
+
+### Is Nostrame compatible with mobile?
+Not currently. Nostrame is a browser extension for desktop browsers. Mobile Nostr apps typically have built-in key management.
+
+### Can websites see my private key?
+No. Websites only receive signatures. The private key never leaves the extension.
+
+### Is Nostrame open source?
+Yes. The complete source code is available at https://github.com/getnostrame/nostrame under the Unlicense (public domain).
+
+### Does Nostrame work offline?
+Signing works offline. Fetching profile metadata requires network access to Nostr relays.
+
+### How do I report a security issue?
+Open an issue at https://github.com/getnostrame/nostrame/issues or contact the developer via Nostr.
+
+---
+
+## 12. Links and Resources
+
+### Official Links
+- Website: https://getnostrame.com
+- Chrome Web Store: https://chromewebstore.google.com/detail/nostrame/phfdiknibomfgpefcicfckkklimoniej
+- GitHub Repository: https://github.com/getnostrame/nostrame
+- NostrApps Directory: https://nostrapps.com/Nostrame
+
+### Developer
+- Name: Anderson Juhasc
+- GitHub: https://github.com/Anderson-Juhasc
+- Nostr: npub1lm93678pyyxxdta28lyjaq4pyfps6cqpk9y04w3seu4wfeh6alesnzwwz2
+
+### Nostr Protocol Resources
+- Nostr Protocol: https://github.com/nostr-protocol/nostr
+- NIPs Repository: https://github.com/nostr-protocol/nips
+- NIP-07 Specification: https://github.com/nostr-protocol/nips/blob/master/07.md
+
+### Related Standards
+- BIP-39 (Mnemonic): https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki
+- BIP-32 (HD Wallets): https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
